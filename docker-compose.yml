@@ -1,0 +1,73 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: carousell_buddy_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-carousell}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-carousell}
+      POSTGRES_DB: ${POSTGRES_DB:-carousell}
+    volumes:
+      - ${POSTGRES_DATA_PATH:-postgres_data}:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-carousell}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: carousell-buddy-backend
+    container_name: carousell_buddy_backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-postgresql+asyncpg://carousell:carousell@db:5432/carousell}
+      SECRET_KEY: ${SECRET_KEY:?SECRET_KEY must be set in .env}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:5243}
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
+      TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID:-}
+    volumes:
+      - /dev/shm:/dev/shm  # Required for Playwright/Chromium
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health')\""]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    image: carousell-buddy-frontend
+    container_name: carousell_buddy_frontend
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    container_name: carousell_buddy_nginx
+    restart: unless-stopped
+    ports:
+      - "${PORT:-5243}:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+      frontend:
+        condition: service_started
+
+# Only used if POSTGRES_DATA_PATH is not set to a bind-mount path.
+# On TrueNAS, set POSTGRES_DATA_PATH=/mnt/tank/apps/carousell-buddy/postgres in .env
+volumes:
+  postgres_data:
