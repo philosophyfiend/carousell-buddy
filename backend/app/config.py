@@ -1,0 +1,32 @@
+from functools import lru_cache
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+class Settings(BaseSettings):
+    DATABASE_URL: str = "postgresql+asyncpg://carousell:carousell@db:5432/carousell"
+    SECRET_KEY: str = "change-me-in-production"
+    ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    REFRESH_TOKEN_EXPIRE_DAYS: int = 30
+    FRONTEND_URL: str = "http://localhost:5173"
+
+    # Telegram bot settings
+    TELEGRAM_BOT_TOKEN: str = ""
+    TELEGRAM_CHAT_ID: str = ""
+
+    # Carousell scraping rate-limit settings
+    SLEEP_MIN: float = 2.0
+    SLEEP_MAX: float = 6.0
+    CYCLE_SLEEP_MIN: float = 30.0
+    CYCLE_SLEEP_MAX: float = 90.0
+
+    # Scraping behaviour
+    SCRAPE_MAX_PAGES: int = 3
+    SCRAPE_RETRY_ATTEMPTS: int = 5
+
+    model_config = SettingsConfigDict(env_file=".env")
+
+
+@lru_cache
+def get_settings() -> Settings:
+    return Settings()
