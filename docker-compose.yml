@@ -18,10 +18,7 @@ services:
       retries: 5
 
   backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    image: carousell-buddy-backend
+    image: ghcr.io/philosophyfiend/carousell-buddy-backend:latest
     container_name: carousell_buddy_backend
     restart: unless-stopped
     depends_on:
@@ -43,10 +40,7 @@ services:
       start_period: 60s
 
   frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    image: carousell-buddy-frontend
+    image: ghcr.io/philosophyfiend/carousell-buddy-frontend:latest
     container_name: carousell_buddy_frontend
     restart: unless-stopped
     depends_on:
@@ -54,9 +48,7 @@ services:
         condition: service_healthy
 
   nginx:
-    build:
-      context: ./nginx
-      dockerfile: Dockerfile
+    image: ghcr.io/philosophyfiend/carousell-buddy-nginx:latest
     container_name: carousell_buddy_nginx
     restart: unless-stopped
     ports:
