@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { api } from '@/lib/api'
 import type { Listing, PaginatedListings, ListingStatus } from '@/types'
 
@@ -7,10 +7,11 @@ export function useListings(
   status?: ListingStatus | 'all',
   page: number = 1,
   pageSize: number = 48,
-  sortBy?: string
+  sortBy?: string,
+  showExcluded: boolean = false
 ) {
   return useQuery<PaginatedListings>({
-    queryKey: ['listings', searchId, status, page, pageSize, sortBy],
+    queryKey: ['listings', searchId, status, page, pageSize, sortBy, showExcluded],
     queryFn: async () => {
       const params: Record<string, unknown> = {
         search_id: searchId,
@@ -19,10 +20,35 @@ export function useListings(
       }
       if (status && status !== 'all') params.status = status
       if (sortBy) params.sort_by = sortBy
+      if (showExcluded) params.show_excluded = true
       const res = await api.get<PaginatedListings>(`/listings`, { params })
       return res.data
     },
     enabled: !!searchId,
+  })
+}
+
+export function useExcludeListing() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async (listingId: string) => {
+      await api.post('/listings/exclude', { listing_id: listingId })
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['listings'] })
+    },
+  })
+}
+
+export function useRestoreListing() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async (listingId: string) => {
+      await api.delete(`/listings/exclude/${listingId}`)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['listings'] })
+    },
   })
 }
 

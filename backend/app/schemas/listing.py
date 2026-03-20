@@ -23,6 +23,7 @@ class ListingOut(BaseModel):
     first_seen_at: datetime
     last_seen_at: datetime
     sold_at: Optional[datetime]
+    is_excluded: bool = False
 
 
 class PaginatedListings(BaseModel):
@@ -31,3 +32,15 @@ class PaginatedListings(BaseModel):
     page: int
     page_size: int
     pages: int
+
+
+class ExcludeListingRequest(BaseModel):
+    listing_id: uuid.UUID
+
+
+class ExcludedListingOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: uuid.UUID
+    listing_id: uuid.UUID
+    excluded_at: datetime

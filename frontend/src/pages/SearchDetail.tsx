@@ -26,13 +26,13 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card'
 import { cn, formatPrice } from '@/lib/utils'
 import { getSearchStats } from '@/lib/api'
 import { useSearch, useUpdateSearch, useRunSearch, useScrapeRuns } from '@/hooks/useSearches'
-import { useListings } from '@/hooks/useListings'
+import { useListings, useExcludeListing, useRestoreListing } from '@/hooks/useListings'
 import type { ListingStatus, SortBy, SearchFormValues } from '@/types'
 
 export default function SearchDetailPage() {
   const { id } = useParams<{ id: string }>()
   const [editOpen, setEditOpen] = useState(false)
-  const [statusFilter, setStatusFilter] = useState<ListingStatus | 'all'>('active')
+  const [statusFilter, setStatusFilter] = useState<ListingStatus | 'all' | 'hidden'>('active')
   const [sortBy, setSortBy] = useState<SortBy>('newest')
   const [page, setPage] = useState(1)
 
@@ -46,16 +46,20 @@ export default function SearchDetailPage() {
 
   const PAGE_SIZE = 48
 
+  const isHiddenFilter = statusFilter === 'hidden'
   const { data: listingsData, isLoading: listingsLoading } = useListings(
     id!,
-    statusFilter === 'all' ? undefined : statusFilter,
+    isHiddenFilter ? 'active' : statusFilter === 'all' ? undefined : statusFilter,
     page,
     PAGE_SIZE,
-    sortBy
+    sortBy,
+    isHiddenFilter
   )
 
   const updateSearch = useUpdateSearch()
   const runSearch = useRunSearch()
+  const excludeListing = useExcludeListing()
+  const restoreListing = useRestoreListing()
 
   const handleUpdate = (values: SearchFormValues) => {
     updateSearch.mutate(
@@ -68,7 +72,7 @@ export default function SearchDetailPage() {
     runSearch.mutate(id!)
   }
 
-  const handleStatusChange = (status: ListingStatus | 'all') => {
+  const handleStatusChange = (status: ListingStatus | 'all' | 'hidden') => {
     setStatusFilter(status)
     setPage(1)
   }
@@ -205,6 +209,8 @@ export default function SearchDetailPage() {
           <ListingGrid
             listings={listingsData?.items ?? []}
             isLoading={listingsLoading}
+            onExclude={(listingId) => excludeListing.mutate(listingId)}
+            onRestore={isHiddenFilter ? (listingId) => restoreListing.mutate(listingId) : undefined}
           />
           {listingsData && (
             <ListingsPagination
