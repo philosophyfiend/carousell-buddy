@@ -7,11 +7,15 @@ import type { Listing } from '@/types'
 interface ListingGridProps {
   listings: Listing[]
   isLoading?: boolean
+  onExclude?: (listingId: string) => void
+  onRestore?: (listingId: string) => void
 }
 
 export function ListingGrid({
   listings,
   isLoading = false,
+  onExclude,
+  onRestore,
 }: ListingGridProps) {
   if (isLoading) {
     return (
@@ -39,6 +43,8 @@ export function ListingGrid({
         <ListingCard
           key={listing.id}
           listing={listing}
+          onExclude={onExclude}
+          onRestore={onRestore}
         />
       ))}
     </div>

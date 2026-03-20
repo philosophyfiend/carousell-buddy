@@ -64,6 +64,7 @@ export interface Listing {
   first_seen_at: string
   last_seen_at: string
   sold_at: string | null
+  is_excluded?: boolean
 }
 
 export interface PaginatedListings {

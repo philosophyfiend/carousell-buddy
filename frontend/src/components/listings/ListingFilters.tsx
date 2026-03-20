@@ -3,16 +3,17 @@ import { Select } from '@/components/ui/Select'
 import type { ListingStatus, SortBy } from '@/types'
 
 interface ListingFiltersProps {
-  status: ListingStatus | 'all'
-  onStatusChange: (status: ListingStatus | 'all') => void
+  status: ListingStatus | 'all' | 'hidden'
+  onStatusChange: (status: ListingStatus | 'all' | 'hidden') => void
   sortBy: SortBy
   onSortChange: (sort: SortBy) => void
   totalCount?: number
 }
 
-const statusOptions: { label: string; value: ListingStatus | 'all' }[] = [
+const statusOptions: { label: string; value: ListingStatus | 'all' | 'hidden' }[] = [
   { label: 'Active', value: 'active' },
   { label: 'Sold', value: 'sold' },
+  { label: 'Hidden', value: 'hidden' },
   { label: 'All', value: 'all' },
 ]
 
