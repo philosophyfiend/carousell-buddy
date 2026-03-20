@@ -54,11 +54,15 @@ async def list_listings(
                 detail=f"Invalid status value: {status_filter}. Must be one of: active, sold, deleted, all",
             )
 
-    # Filter out excluded listings unless explicitly requested
+    # Filter based on excluded status
     excluded_subq = select(ExcludedListing.listing_id).where(
         ExcludedListing.user_id == current_user.id
     )
-    if not show_excluded:
+    if show_excluded:
+        # Show ONLY excluded listings
+        base_query = base_query.where(Listing.id.in_(excluded_subq))
+    else:
+        # Hide excluded listings (default)
         base_query = base_query.where(Listing.id.notin_(excluded_subq))
 
     # Count total
@@ -73,22 +77,10 @@ async def list_listings(
     )
     listings = listings_result.scalars().all()
 
-    # Get excluded IDs for the current page to set is_excluded flag
-    listing_ids = [l.id for l in listings]
-    excluded_ids: set[uuid.UUID] = set()
-    if show_excluded and listing_ids:
-        exc_result = await db.execute(
-            select(ExcludedListing.listing_id).where(
-                ExcludedListing.user_id == current_user.id,
-                ExcludedListing.listing_id.in_(listing_ids),
-            )
-        )
-        excluded_ids = set(exc_result.scalars().all())
-
     items = []
     for listing in listings:
         out = ListingOut.model_validate(listing)
-        out.is_excluded = listing.id in excluded_ids
+        out.is_excluded = show_excluded  # all items in this response share the same excluded state
         items.append(out)
 
     pages = math.ceil(total / page_size) if page_size > 0 else 0
