@@ -171,7 +171,7 @@ async def scrape_with_playwright(
     min_price: Optional[float] = None,
     max_price: Optional[float] = None,
     condition: Optional[str] = None,
-    count: int = 60,
+    count: int = 200,
 ) -> list[ScrapedListing]:
     """
     Render the Carousell HK search page with async Playwright (headless Chromium)
@@ -220,7 +220,7 @@ async def scrape_with_playwright(
 
             # Scroll to load more if needed
             attempts = 0
-            while len(listings) < count and attempts < 3:
+            while len(listings) < count and attempts < 10:
                 await page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
                 await asyncio.sleep(3)
                 html_content = await page.content()

@@ -21,7 +21,7 @@ class Settings(BaseSettings):
     CYCLE_SLEEP_MAX: float = 90.0
 
     # Scraping behaviour
-    SCRAPE_MAX_PAGES: int = 3
+    SCRAPE_MAX_PAGES: int = 10
     SCRAPE_RETRY_ATTEMPTS: int = 5
 
     model_config = SettingsConfigDict(env_file=".env")
