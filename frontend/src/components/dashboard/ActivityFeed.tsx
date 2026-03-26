@@ -48,12 +48,10 @@ export function ActivityFeed({ listings, searches, isLoading = false, onExclude 
         ) : (
           <div className="space-y-1">
             {listings.map((listing) => (
-              <a
+              <div
                 key={listing.id}
-                href={listing.listing_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-3 rounded-lg p-2.5 -mx-2.5 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors group"
+                onClick={() => window.open(listing.listing_url, '_blank', 'noopener,noreferrer')}
+                className="flex items-center gap-3 rounded-lg p-2.5 -mx-2.5 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors group cursor-pointer"
               >
                 {/* Thumbnail */}
                 <div className="h-12 w-12 rounded-lg bg-gray-100 dark:bg-gray-700 overflow-hidden shrink-0">
@@ -94,7 +92,6 @@ export function ActivityFeed({ listings, searches, isLoading = false, onExclude 
                   {onExclude && (
                     <button
                       onClick={(e) => {
-                        e.preventDefault()
                         e.stopPropagation()
                         onExclude(listing.id)
                       }}
@@ -114,7 +111,7 @@ export function ActivityFeed({ listings, searches, isLoading = false, onExclude 
                   </span>
                   <ExternalLink className="h-3.5 w-3.5 text-gray-300 group-hover:text-gray-500 dark:group-hover:text-gray-400 transition-colors" />
                 </div>
-              </a>
+              </div>
             ))}
           </div>
         )}

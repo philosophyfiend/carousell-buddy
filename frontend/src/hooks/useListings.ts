@@ -47,6 +47,7 @@ export function useAllListings(
       const res = await api.get<PaginatedListings>('/listings/all', { params })
       return res.data
     },
+    retry: 1,
   })
 }
 

@@ -21,7 +21,7 @@ export default function AllListingsPage() {
 
   const { data: searches = [] } = useSearches()
   const isHiddenFilter = statusFilter === 'hidden'
-  const { data: listingsData, isLoading } = useAllListings(
+  const { data: listingsData, isLoading, isError } = useAllListings(
     isHiddenFilter ? 'active' : statusFilter === 'all' ? undefined : statusFilter,
     page,
     PAGE_SIZE,
@@ -42,6 +42,8 @@ export default function AllListingsPage() {
     { label: 'All Searches', value: '' },
     ...searches.map(s => ({ label: s.name, value: s.id })),
   ]
+
+  const items = listingsData?.items ?? []
 
   return (
     <Shell>
@@ -69,14 +71,24 @@ export default function AllListingsPage() {
         onSortChange={(s) => { setSortBy(s); setPage(1) }}
         totalCount={listingsData?.total}
       />
-      <ListingGrid
-        listings={listingsData?.items ?? []}
-        isLoading={isLoading}
-        onExclude={(listingId) => excludeListing.mutate(listingId)}
-        onRestore={isHiddenFilter ? (listingId) => restoreListing.mutate(listingId) : undefined}
-        onShowDetail={setDetailListingId}
-      />
-      {listingsData && (
+
+      {isError ? (
+        <div className="flex flex-col items-center justify-center py-16 text-center">
+          <p className="text-gray-500 dark:text-gray-400 text-sm">
+            Failed to load listings. Make sure your backend is updated and the database migration has been run.
+          </p>
+        </div>
+      ) : (
+        <ListingGrid
+          listings={items}
+          isLoading={isLoading}
+          onExclude={(listingId) => excludeListing.mutate(listingId)}
+          onRestore={isHiddenFilter ? (listingId) => restoreListing.mutate(listingId) : undefined}
+          onShowDetail={setDetailListingId}
+        />
+      )}
+
+      {listingsData && listingsData.pages > 1 && (
         <ListingsPagination
           page={listingsData.page}
           pages={listingsData.pages}
@@ -88,7 +100,7 @@ export default function AllListingsPage() {
 
       <ListingDetailModal
         listingId={detailListingId}
-        listing={listingsData?.items.find(l => l.id === detailListingId)}
+        listing={items.find(l => l.id === detailListingId)}
         open={!!detailListingId}
         onClose={() => setDetailListingId(null)}
       />
