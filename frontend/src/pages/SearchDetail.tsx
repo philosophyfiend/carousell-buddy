@@ -17,6 +17,7 @@ import { PageHeader } from '@/components/layout/PageHeader'
 import { ListingGrid } from '@/components/listings/ListingGrid'
 import { ListingFilters } from '@/components/listings/ListingFilters'
 import { ListingsPagination } from '@/components/listings/ListingsPagination'
+import { ListingDetailModal } from '@/components/listings/ListingDetailModal'
 import { ScrapeRunHistory } from '@/components/searches/ScrapeRunHistory'
 import { SearchForm } from '@/components/searches/SearchForm'
 import { Badge } from '@/components/ui/Badge'
@@ -35,6 +36,7 @@ export default function SearchDetailPage() {
   const [statusFilter, setStatusFilter] = useState<ListingStatus | 'all' | 'hidden'>('active')
   const [sortBy, setSortBy] = useState<SortBy>('newest')
   const [page, setPage] = useState(1)
+  const [detailListingId, setDetailListingId] = useState<string | null>(null)
 
   const { data: search, isLoading: searchLoading } = useSearch(id!)
   const { data: runsData = [], isLoading: runsLoading } = useScrapeRuns(id!)
@@ -211,6 +213,7 @@ export default function SearchDetailPage() {
             isLoading={listingsLoading}
             onExclude={(listingId) => excludeListing.mutate(listingId)}
             onRestore={isHiddenFilter ? (listingId) => restoreListing.mutate(listingId) : undefined}
+            onShowDetail={setDetailListingId}
           />
           {listingsData && (
             <ListingsPagination
@@ -314,6 +317,14 @@ export default function SearchDetailPage() {
           )}
         </Tabs.Content>
       </Tabs.Root>
+
+      {/* Listing detail modal */}
+      <ListingDetailModal
+        listingId={detailListingId}
+        listing={listingsData?.items.find(l => l.id === detailListingId)}
+        open={!!detailListingId}
+        onClose={() => setDetailListingId(null)}
+      />
 
       {/* Edit form */}
       <SearchForm

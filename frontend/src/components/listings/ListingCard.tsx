@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ExternalLink, ShoppingBag, EyeOff, Eye } from 'lucide-react'
+import { ExternalLink, ShoppingBag, EyeOff, Eye, TrendingUp } from 'lucide-react'
 import { cn, formatPrice, timeAgo, isRecentListing } from '@/lib/utils'
 import { Badge } from '@/components/ui/Badge'
 import type { Listing } from '@/types'
@@ -8,9 +8,10 @@ interface ListingCardProps {
   listing: Listing
   onExclude?: (listingId: string) => void
   onRestore?: (listingId: string) => void
+  onShowDetail?: (listingId: string) => void
 }
 
-export function ListingCard({ listing, onExclude, onRestore }: ListingCardProps) {
+export function ListingCard({ listing, onExclude, onRestore, onShowDetail }: ListingCardProps) {
   const [imgError, setImgError] = useState(false)
   const isSold = listing.status === 'sold'
   const isNew = isRecentListing(listing.first_seen_at)
@@ -67,8 +68,20 @@ export function ListingCard({ listing, onExclude, onRestore }: ListingCardProps)
           </div>
         )}
 
-        {/* External link indicator */}
-        <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+        {/* Top-right action buttons */}
+        <div className="absolute top-2 right-2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+          {onShowDetail && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                onShowDetail(listing.id)
+              }}
+              title="Price history"
+              className="rounded-md bg-black/50 hover:bg-brand-500/80 p-1 transition-colors"
+            >
+              <TrendingUp className="h-3 w-3 text-white" />
+            </button>
+          )}
           <div className="rounded-md bg-black/50 p-1">
             <ExternalLink className="h-3 w-3 text-white" />
           </div>

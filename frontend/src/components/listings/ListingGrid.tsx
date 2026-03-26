@@ -9,6 +9,7 @@ interface ListingGridProps {
   isLoading?: boolean
   onExclude?: (listingId: string) => void
   onRestore?: (listingId: string) => void
+  onShowDetail?: (listingId: string) => void
 }
 
 export function ListingGrid({
@@ -16,6 +17,7 @@ export function ListingGrid({
   isLoading = false,
   onExclude,
   onRestore,
+  onShowDetail,
 }: ListingGridProps) {
   if (isLoading) {
     return (
@@ -45,6 +47,7 @@ export function ListingGrid({
           listing={listing}
           onExclude={onExclude}
           onRestore={onRestore}
+          onShowDetail={onShowDetail}
         />
       ))}
     </div>

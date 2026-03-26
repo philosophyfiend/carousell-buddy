@@ -5,6 +5,7 @@ import RegisterPage from './pages/Register'
 import DashboardPage from './pages/Dashboard'
 import SearchesPage from './pages/Searches'
 import SearchDetailPage from './pages/SearchDetail'
+import AllListingsPage from './pages/AllListings'
 import SettingsPage from './pages/Settings'
 
 function ProtectedRoute({ children }: { children: ReactNode }) {
@@ -49,6 +50,14 @@ export default function App() {
         element={
           <ProtectedRoute>
             <SearchDetailPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/items"
+        element={
+          <ProtectedRoute>
+            <AllListingsPage />
           </ProtectedRoute>
         }
       />

@@ -85,6 +85,17 @@ export interface NotificationConfig {
   enabled: boolean
 }
 
+export interface PriceHistoryPoint {
+  price: number
+  recorded_at: string
+}
+
+export interface PriceHistoryResponse {
+  listing_id: string
+  current_price: number | null
+  history: PriceHistoryPoint[]
+}
+
 export interface PriceStats {
   count: number
   min: number

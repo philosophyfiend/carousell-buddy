@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { api } from '@/lib/api'
-import type { Listing, PaginatedListings, ListingStatus } from '@/types'
+import type { Listing, PaginatedListings, ListingStatus, PriceHistoryResponse } from '@/types'
 
 export function useListings(
   searchId: string,
@@ -25,6 +25,28 @@ export function useListings(
       return res.data
     },
     enabled: !!searchId,
+  })
+}
+
+export function useAllListings(
+  status?: ListingStatus | 'all',
+  page: number = 1,
+  pageSize: number = 48,
+  sortBy?: string,
+  showExcluded: boolean = false,
+  searchId?: string
+) {
+  return useQuery<PaginatedListings>({
+    queryKey: ['listings', 'all', status, page, pageSize, sortBy, showExcluded, searchId],
+    queryFn: async () => {
+      const params: Record<string, unknown> = { page, page_size: pageSize }
+      if (status && status !== 'all') params.status = status
+      if (sortBy) params.sort_by = sortBy
+      if (showExcluded) params.show_excluded = true
+      if (searchId) params.search_id = searchId
+      const res = await api.get<PaginatedListings>('/listings/all', { params })
+      return res.data
+    },
   })
 }
 
@@ -75,5 +97,16 @@ export function useAllRecentListings(searchIds: string[]) {
       return all.slice(0, 20)
     },
     enabled: searchIds.length > 0,
+  })
+}
+
+export function usePriceHistory(listingId: string | null) {
+  return useQuery<PriceHistoryResponse>({
+    queryKey: ['price-history', listingId],
+    queryFn: async () => {
+      const res = await api.get<PriceHistoryResponse>(`/listings/${listingId}/price-history`)
+      return res.data
+    },
+    enabled: !!listingId,
   })
 }

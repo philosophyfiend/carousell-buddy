@@ -44,3 +44,16 @@ class ExcludedListingOut(BaseModel):
     id: uuid.UUID
     listing_id: uuid.UUID
     excluded_at: datetime
+
+
+class PriceHistoryPoint(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    price: int
+    recorded_at: datetime
+
+
+class PriceHistoryResponse(BaseModel):
+    listing_id: uuid.UUID
+    current_price: Optional[int]
+    history: list[PriceHistoryPoint]

@@ -1,4 +1,4 @@
-import { ExternalLink, ShoppingBag } from 'lucide-react'
+import { ExternalLink, ShoppingBag, EyeOff } from 'lucide-react'
 import { cn, formatPrice, timeAgo } from '@/lib/utils'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card'
 import { Skeleton } from '@/components/ui/Skeleton'
@@ -9,13 +9,14 @@ interface ActivityFeedProps {
   listings: Listing[]
   searches: SavedSearch[]
   isLoading?: boolean
+  onExclude?: (listingId: string) => void
 }
 
 function getSearchName(searchId: string, searches: SavedSearch[]) {
   return searches.find((s) => s.id === searchId)?.name ?? 'Unknown Search'
 }
 
-export function ActivityFeed({ listings, searches, isLoading = false }: ActivityFeedProps) {
+export function ActivityFeed({ listings, searches, isLoading = false, onExclude }: ActivityFeedProps) {
   return (
     <Card>
       <CardHeader>
@@ -88,8 +89,21 @@ export function ActivityFeed({ listings, searches, isLoading = false }: Activity
                   </div>
                 </div>
 
-                {/* Price + link */}
+                {/* Price + actions */}
                 <div className="flex items-center gap-2 shrink-0">
+                  {onExclude && (
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault()
+                        e.stopPropagation()
+                        onExclude(listing.id)
+                      }}
+                      title="Hide listing"
+                      className="opacity-0 group-hover:opacity-100 transition-opacity rounded-md p-1 hover:bg-red-100 dark:hover:bg-red-900/30"
+                    >
+                      <EyeOff className="h-3.5 w-3.5 text-gray-400 hover:text-red-500" />
+                    </button>
+                  )}
                   <span
                     className={cn(
                       'text-sm font-semibold',

@@ -3,6 +3,7 @@ import { NavLink, useLocation } from 'react-router-dom'
 import {
   LayoutDashboard,
   Search,
+  ShoppingBag,
   Settings,
   LogOut,
   Menu,
@@ -23,6 +24,7 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { label: 'Dashboard', to: '/dashboard', icon: <LayoutDashboard className="h-4 w-4" /> },
+  { label: 'All Items', to: '/items', icon: <ShoppingBag className="h-4 w-4" /> },
   { label: 'Searches', to: '/searches', icon: <Search className="h-4 w-4" /> },
   { label: 'Settings', to: '/settings', icon: <Settings className="h-4 w-4" /> },
 ]

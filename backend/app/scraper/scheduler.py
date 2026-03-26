@@ -18,6 +18,7 @@ from app.config import get_settings
 from app.database import AsyncSessionLocal
 from app.models.search import SavedSearch, ScrapeRun, ScrapeRunStatus
 from app.models.listing import Listing, ListingStatus
+from app.models.price_history import PriceHistory
 from app.models.notification import NotificationConfig
 from app.scraper.scraper import fetch_listings
 from app.services.notifier import send_new_listings_notification
@@ -184,6 +185,27 @@ class ScraperScheduler:
                     if abs((row.first_seen_at - now).total_seconds()) < 1
                 ]
                 new_count = len(new_listing_ids)
+
+                # Record price history for all upserted listings that have prices
+                upserted_ids = [row.id for row in returned_rows]
+                if upserted_ids:
+                    price_rows = await db.execute(
+                        select(Listing.id, Listing.price).where(
+                            Listing.id.in_(upserted_ids),
+                            Listing.price.isnot(None),
+                        )
+                    )
+                    # Only record if price differs from last recorded price (or first record)
+                    for lid, lprice in price_rows.fetchall():
+                        last_price_result = await db.execute(
+                            select(PriceHistory.price)
+                            .where(PriceHistory.listing_id == lid)
+                            .order_by(PriceHistory.recorded_at.desc())
+                            .limit(1)
+                        )
+                        last_price = last_price_result.scalar_one_or_none()
+                        if last_price is None or last_price != lprice:
+                            db.add(PriceHistory(listing_id=lid, price=lprice, recorded_at=now))
 
                 # Mark previously-active listings not seen this run as sold
                 await db.execute(

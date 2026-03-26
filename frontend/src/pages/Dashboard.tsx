@@ -5,12 +5,13 @@ import { StatsCard } from '@/components/dashboard/StatsCard'
 import { ActivityFeed } from '@/components/dashboard/ActivityFeed'
 import { SearchStatusGrid } from '@/components/dashboard/SearchStatusGrid'
 import { useSearches } from '@/hooks/useSearches'
-import { useAllRecentListings } from '@/hooks/useListings'
+import { useAllRecentListings, useExcludeListing } from '@/hooks/useListings'
 
 export default function DashboardPage() {
   const { data: searches = [], isLoading: searchesLoading } = useSearches()
   const searchIds = searches.map((s) => s.id)
   const { data: recentListings = [], isLoading: listingsLoading } = useAllRecentListings(searchIds)
+  const excludeListing = useExcludeListing()
 
   const activeSearches = searches.filter((s) => s.enabled).length
   const todayStart = new Date()
@@ -54,6 +55,7 @@ export default function DashboardPage() {
           listings={recentListings}
           searches={searches}
           isLoading={listingsLoading && searchIds.length > 0}
+          onExclude={(id) => excludeListing.mutate(id)}
         />
         <SearchStatusGrid
           searches={searches}
