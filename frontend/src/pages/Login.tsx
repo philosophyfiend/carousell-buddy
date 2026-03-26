@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ShoppingCart, Eye, EyeOff } from 'lucide-react'
+import { Eye, EyeOff } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { useLogin } from '@/hooks/useAuth'
+import { CarousellBuddyLogo } from '@/components/CarousellBuddyLogo'
 
 export default function LoginPage() {
   const [username, setUsername] = useState('')
@@ -21,11 +22,8 @@ export default function LoginPage() {
       <div className="w-full max-w-sm">
         {/* Logo */}
         <div className="mb-8 flex flex-col items-center">
-          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-500 mb-4">
-            <ShoppingCart className="h-7 w-7 text-white" />
-          </div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Carousell Tracker</h1>
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+          <CarousellBuddyLogo iconSize={48} textSize="text-2xl" className="mb-1" />
+          <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
             Sign in to your account
           </p>
         </div>
