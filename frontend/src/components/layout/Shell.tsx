@@ -9,11 +9,11 @@ import {
   X,
   Moon,
   Sun,
-  ShoppingCart,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useCurrentUser, useLogout } from '@/hooks/useAuth'
 import { Button } from '@/components/ui/Button'
+import { CarousellBuddyLogo } from '@/components/CarousellBuddyLogo'
 
 interface NavItem {
   label: string
@@ -87,9 +87,8 @@ export function Shell({ children }: ShellProps) {
         )}
       >
         {/* Logo */}
-        <div className="flex h-16 items-center gap-2 px-5 border-b border-gray-200 dark:border-gray-700 shrink-0">
-          <ShoppingCart className="h-6 w-6 text-brand-500" />
-          <span className="text-base font-bold text-brand-500">Carousell Monitor</span>
+        <div className="flex h-16 items-center px-5 border-b border-gray-200 dark:border-gray-700 shrink-0">
+          <CarousellBuddyLogo iconSize={24} textSize="text-base" />
         </div>
 
         {/* Nav */}
