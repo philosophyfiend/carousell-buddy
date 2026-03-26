@@ -14,10 +14,11 @@ export default function AllListingsPage() {
   const [statusFilter, setStatusFilter] = useState<ListingStatus | 'all' | 'hidden'>('active')
   const [sortBy, setSortBy] = useState<SortBy>('newest')
   const [page, setPage] = useState(1)
-  const [searchFilter, setSearchFilter] = useState<string>('')
+  const [searchFilter, setSearchFilter] = useState<string>('__all__')
   const [detailListingId, setDetailListingId] = useState<string | null>(null)
 
   const PAGE_SIZE = 48
+  const ALL_SEARCHES = '__all__'
 
   const { data: searches = [] } = useSearches()
   const isHiddenFilter = statusFilter === 'hidden'
@@ -27,7 +28,7 @@ export default function AllListingsPage() {
     PAGE_SIZE,
     sortBy,
     isHiddenFilter,
-    searchFilter || undefined
+    searchFilter === ALL_SEARCHES ? undefined : searchFilter
   )
 
   const excludeListing = useExcludeListing()
@@ -37,9 +38,8 @@ export default function AllListingsPage() {
     setStatusFilter(status)
     setPage(1)
   }
-
   const searchOptions = [
-    { label: 'All Searches', value: '' },
+    { label: 'All Searches', value: ALL_SEARCHES },
     ...searches.map(s => ({ label: s.name, value: s.id })),
   ]
 
