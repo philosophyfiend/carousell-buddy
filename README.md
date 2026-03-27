@@ -7,7 +7,7 @@ A self-hosted web application that monitors Carousell.com.hk listings, tracks pr
 ## Features
 
 - **Saved Searches** — Define searches by keyword with optional filters (condition, price range, sort order, polling interval)
-- **Automated Scraping** — Scheduled background jobs poll Carousell at configurable intervals; dual-layer scraping (cloudscraper → Playwright browser fallback) with exponential backoff
+- **Automated Scraping** — Scheduled background jobs poll Carousell at configurable intervals using headless Chromium (Playwright)
 - **All Items View** — Unified grid of every listing across all your searches, with status filtering, sorting, and per-search filtering
 - **Price History** — Tracks price changes over time with a per-listing chart
 - **Price Stats** — Percentile breakdown (p10–p90, min, max, mean) per search to gauge market value
@@ -84,9 +84,6 @@ All configuration is via environment variables in `.env`.
 | Variable | Default | Description |
 |---|---|---|
 | `SCRAPE_MAX_PAGES` | `10` | Maximum pages to scrape per search run |
-| `SCRAPE_RETRY_ATTEMPTS` | `5` | Retry attempts before falling back to Playwright |
-| `SLEEP_MIN` / `SLEEP_MAX` | `2.0` / `6.0` | Random delay (seconds) between page requests |
-| `CYCLE_SLEEP_MIN` / `CYCLE_SLEEP_MAX` | `30.0` / `90.0` | Random delay (seconds) between retry cycles |
 
 ### Telegram (Optional)
 
@@ -144,8 +141,7 @@ Browser
 - **SQLAlchemy 2.0** (async) + **asyncpg** — Database ORM
 - **Alembic** — Schema migrations (run automatically on startup)
 - **APScheduler** — Per-search background scrape jobs
-- **cloudscraper** — Primary scraping method (bypasses Cloudflare)
-- **Playwright/Chromium** — Fallback browser scraping
+- **Playwright/Chromium** — Headless browser scraping
 - **Apprise** — Multi-channel notification dispatch
 - **JWT** (HS256) — Authentication (30-min access tokens, 30-day refresh tokens)
 

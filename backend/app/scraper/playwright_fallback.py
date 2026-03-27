@@ -1,6 +1,5 @@
 """
-Playwright-based fallback scraper for Carousell HK.
-Used when the direct cloudscraper API client fails or returns empty results.
+Playwright-based scraper for Carousell HK.
 Renders the search page with headless Chromium and extracts listings from the DOM.
 """
 import asyncio

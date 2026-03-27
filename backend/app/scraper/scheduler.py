@@ -1,7 +1,7 @@
 """
 APScheduler-based scrape scheduler.
 Loads all enabled SavedSearches on startup and runs them on their configured interval.
-Wired to the new fetch_listings() orchestrator (cloudscraper + Playwright fallback).
+Uses Playwright (headless Chromium) for scraping via fetch_listings().
 """
 import asyncio
 import logging
@@ -92,7 +92,7 @@ class ScraperScheduler:
         """
         Core scrape execution:
           1. Load search from DB.
-          2. Call fetch_listings() (cloudscraper → Playwright fallback).
+          2. Call fetch_listings() (Playwright).
           3. Upsert listings into DB with PostgreSQL ON CONFLICT.
           4. Mark unseen listings as sold.
           5. Send notifications for new listings.
